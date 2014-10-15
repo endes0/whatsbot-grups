@@ -1,14 +1,5 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>whatsbot</title>
-</head>
 <?php 
-
-
-
-
+require('whatsapi/whatsprot.class.php');
 
 
 
@@ -16,6 +7,3 @@
 
 
 ?>
-<body>
-</body>
-</html>
