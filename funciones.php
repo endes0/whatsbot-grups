@@ -17,10 +17,16 @@ $w->PollMessages();
 
 function EsUnComando($mynumber, $from_group_jid, $from_user_jid, $id, $type, $time, $name, $body)
 {
+$EsComando = substr($body, 0, 1);
+$Comando = substr($body, 1);
 
-
-
-
+if ($EsComando=='/') {
+	
+	
+}
+else {
+return false;
+}
 
 }
 
