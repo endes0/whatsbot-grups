@@ -1,14 +1,12 @@
 <?php 
 require('whatsapi/whatsprot.class.php');
+function login($usuario, $contrasena) {
+ global $w, $mysqli;
+ 
+ $debug = false;
+ $nickname = "WaGroupBot";
+$mysqli = new mysqli("ejemplo.com", "usuario", "contraseña", "basedatos");
 $w = new WhatsProt($username, $identity, $nickname, $debug);
-function login() {
- global $w;
- $username = ''; // Number with country code
- $password = ''; // Password obtained with WART or WhatsAPI
- $debug = false; // You can set true, for more details
-
- $nickname = "WaGroupBot"; // This is the username (or nickname) displayed by WhatsApp clients.
-
 $w->connect();
 $w->eventManager()->bind("onGetGroupMessage", "EsUnComando");
 $w->loginWithPassword($password);
@@ -17,18 +15,24 @@ $w->PollMessages();
 
 function EsUnComando($mynumber, $from_group_jid, $from_user_jid, $id, $type, $time, $name, $body)
 {
+global $mysqli, $w;
 $EsComando = substr($body, 0, 1);
 $Comando = substr($body, 1);
+$Unumero = substr($Ujid,-9);
+$Gnumero = substr($Gjid,-5);
 if ($EsComando=='/') {
-ComandosEx($Comando, $from_user_jid, $from_group_jid, $name);		
+if ($mysqli->connect_errno) {
+$w->sendMessage($Gnumero, "hay un problema en whatsbot, intentelo mas tarde");
+}
+else {
+ComandosEx($Comando, $Unumero, $Gnumero, $name);
+}
 }
 }
 
-function ComandosEx($MSG, $Ujid, $Gjid, $nombre)
+function ComandosEx($MSG, $Unumero, $Gnumero, $nombre)
 {
 global $w;	
-$Unumero = substr($Ujid,-9);
-$Gnumero = substr($Gjid,-5);
 $comando = explode(' ', $MSG);
 if ($comando[0]=='hola') {
 $w->sendMessage($Gnumero, "hola, $nombre.");
@@ -53,6 +57,15 @@ else {
 unset($comando[0]);
 $w->sendGroupsParticipantsRemove($Gnumero, $comando);
 $w->sendMessage($Gnumero, "usuario/s eliminado/s del grupo");
+}
+}
+else if ($comando[0]=='kick') {
+if ($comando[1]=='') {
+$w->sendMessage($Gnumero, "inserte un numero de telefono");	
+}
+else {
+$w->sendGroupsParticipantsRemove($Gjid, $comando[1]);
+
 }
 }
 }
