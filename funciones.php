@@ -71,14 +71,22 @@ $w->sendGroupsParticipantsRemove($Gjid, $comando[1]);
 }
 function CrearGrupo($asunto, $participantes)
 {
-global $w;
+global $w, $mysqli;
+if ($mysqli->connect_errno) {
+return false;
+}
+else {
+for ($i = 0; $i <= count($participantes); $i++) {
+$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$participantes[$i].", ".$grupo.")");
+}
 $grupo = $w->sendGroupsChatCreate($asunto, $participantes, $creador);
 $w->sendMessage($grupo, "bienvenid@s al grupo '".$asunto."' creado por '".$creador."' \nusando Whatsbot by endes3000");
 $w->sendMessage($grupo, "		comandos		\n/hola -te saluda. \n/add [numeros de telefonos separados por espacios] -añade participantes. \n/remove [numeros de telefonos separados por espacios] -quita participantes participantes.");
 }
+}
 function AbGrupo($Gnumero, $Gjid, $participantes, $tipo)
 {
-global $w;
+global $w, $mysqli;
 if ($tipo=='AB') {
 $w->sendMessage($Gnumero, "se ha recibido unapeticion de eliminacion des este grupo \nel grupo se va a eliminar dentro de 20 segundos");
 sleep(10);	
@@ -86,6 +94,8 @@ $w->sendMessage($Gnumero, "el grupo se va ha eliminar dentro de 10 segundos");
 sleep(5);
 $w->sendMessage($Gnumero, "el grupo se va a eliminar dentro de 5 segundos");
 sleep(5);
+$mysqli->query("DELENTE FROM usuarios_grupo WHERE grupo = '".$Gnumero."'");
+$mysqli->query("DELENTE FROM grupos WHERE grupo = '".$Gnumero."'");
 $w->sendGroupsParticipantsRemove($Gnumero, $participantes);
 sleep(1);
 $w->sendGroupsChatEnd($Gjid);
@@ -95,4 +105,15 @@ $w->sendMessage($Gnumero, "se ha recibido una peticion para que whats bot deje d
 $w->sendGroupsChatEnd($Gjid);	
 }
 }
+function EsAdmin($numero, $grupo) {
+global $mysqli;
+$usuario = $mysqli->query("SELECT admin FROM usuarios_grupo WHERE numero = '".$numero."'");	
+if ($usuario=="si") {
+return true;	
+}
+else {
+return false;	
+}
+}
+	
 ?>
