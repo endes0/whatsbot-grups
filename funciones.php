@@ -32,7 +32,7 @@ ComandosEx($Comando, $Unumero, $Gnumero, $name);
 
 function ComandosEx($MSG, $Unumero, $Gnumero, $nombre)
 {
-global $w;	
+global $mysqli, $w;	
 $comando = explode(' ', $MSG);
 if ($comando[0]=='hola') {
 $w->sendMessage($Gnumero, "hola, $nombre.");
@@ -45,7 +45,11 @@ $w->sendMessage($Gnumero, "porfavor escriba numeros de tlf.");
 else {
 unset($comando[0]);
 $w->sendGroupsParticipantsAdd($Gnumero, $comando);
+for ($i = 0; $i <= count($comando); $i++) {
+$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$comando[$i].", ".$Gnumero.")");
+}
 sleep(2);
+$w->sendMessage($Gnumero, "usuario/s añadido/s al grupo");
 $w->sendMessage($grupo, "		comandos		\n/hola -te saluda. \n/add [numeros de telefonos separados por espacios] -añade participantes. \n/remove [numeros de telefonos separados por espacios] -quita participantes participantes.");
 }
 }
@@ -56,6 +60,9 @@ $w->sendMessage($Gnumero, "porfavor escriba numeros de tlf.");
 else {
 unset($comando[0]);
 $w->sendGroupsParticipantsRemove($Gnumero, $comando);
+for ($i = 0; $i <= count($comando); $i++) {
+$mysqli->query("DELENTE FROM usuarios_grupo WHERE numero = '".$comando[$i++]."'");
+}
 $w->sendMessage($Gnumero, "usuario/s eliminado/s del grupo");
 }
 }
@@ -64,6 +71,7 @@ if ($comando[1]=='') {
 $w->sendMessage($Gnumero, "inserte un numero de telefono");	
 }
 else {
+$mysqli->query("INSERT INTO kick (numero, grupo VALUES (".$comando[1].", ".$Gnumero.")");
 $w->sendGroupsParticipantsRemove($Gjid, $comando[1]);
 
 }
@@ -76,10 +84,12 @@ if ($mysqli->connect_errno) {
 return false;
 }
 else {
+$grupo = $w->sendGroupsChatCreate($asunto, $participantes, $creador);
+$fecha = date("Y-m-d H:i:s");
+$mysqli->query("INSERT INTO grupos (grupoid, fecha VALUES (".$grupo.", ".$fecha.")");
 for ($i = 0; $i <= count($participantes); $i++) {
 $mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$participantes[$i].", ".$grupo.")");
 }
-$grupo = $w->sendGroupsChatCreate($asunto, $participantes, $creador);
 $w->sendMessage($grupo, "bienvenid@s al grupo '".$asunto."' creado por '".$creador."' \nusando Whatsbot by endes3000");
 $w->sendMessage($grupo, "		comandos		\n/hola -te saluda. \n/add [numeros de telefonos separados por espacios] -añade participantes. \n/remove [numeros de telefonos separados por espacios] -quita participantes participantes.");
 }
@@ -115,5 +125,13 @@ else {
 return false;	
 }
 }
-	
+function DeKick() {
+global $w;
+$kick = $mysqli->query("SELECT * FROM kick ORDER BY id ASC");
+$kick->data_seek(0);
+while ($datos = $kick->fetch_assoc()) {
+$w->sendGroupsParticipantsAdd($datos[grupo], $datos[numero]);
+$w->disconnect();
+}	
+}
 ?>
