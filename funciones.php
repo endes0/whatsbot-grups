@@ -34,6 +34,7 @@ if ($mysqli->connect_errno) {
 $w->sendMessage($Gnumero, "hay un problema en whatsbot, intentelo mas tarde");
 }
 else {
+$mysqli->query("INSERT INTO usuarios_grupo (nombre) VALUES (".$name.")");
 ComandosEx($Comando, $Unumero, $Gnumero, $name);
 }
 }
@@ -55,7 +56,7 @@ else {
 unset($comando[0]);
 $w->sendGroupsParticipantsAdd($Gnumero, $comando);
 for ($i = 0; $i <= count($comando); $i++) {
-$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$comando[$i].", ".$Gnumero.")");
+$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo) VALUES (".$comando[$i].", ".$Gnumero.")");
 }
 sleep(2);
 $w->sendMessage($Gnumero, "usuario/s añadido/s al grupo");
@@ -80,7 +81,7 @@ if ($comando[1]=='') {
 $w->sendMessage($Gnumero, "inserte un numero de telefono");	
 }
 else {
-$mysqli->query("INSERT INTO kick (numero, grupo VALUES (".$comando[1].", ".$Gnumero.")");
+$mysqli->query("INSERT INTO kick (numero, grupo) VALUES (".$comando[1].", ".$Gnumero.")");
 $w->sendGroupsParticipantsRemove($Gjid, $comando[1]);
 
 }
@@ -95,9 +96,9 @@ return false;
 else {
 $grupo = $w->sendGroupsChatCreate($asunto, $participantes);
 $fecha = date("Y-m-d H:i:s");
-$mysqli->query("INSERT INTO grupos (grupoid, fecha, idioma VALUES (".$grupo.", ".$fecha.", ".$idioma.")");
+$mysqli->query("INSERT INTO grupos (grupoid, fecha, idioma) VALUES (".$grupo.", ".$fecha.", ".$idioma.")");
 for ($i = 0; $i <= count($participantes); $i++) {
-$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$participantes[$i].", ".$grupo.")");
+$mysqli->query("INSERT INTO usuarios_grupo (numero, grupo) VALUES (".$participantes[$i].", ".$grupo.")");
 }
 $w->sendMessage($grupo, "bienvenid@s al grupo '".$asunto."' creado por '".$creador."' \nusando Whatsbot by endes3000");
 $w->sendMessage($grupo, "		comandos		\n/hola -te saluda. \n/add [numeros de telefonos separados por espacios] -añade participantes. \n/remove [numeros de telefonos separados por espacios] -quita participantes participantes.");
