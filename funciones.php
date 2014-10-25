@@ -95,7 +95,7 @@ return false;
 else {
 $grupo = $w->sendGroupsChatCreate($asunto, $participantes);
 $fecha = date("Y-m-d H:i:s");
-$mysqli->query("INSERT INTO grupos (grupoid, fecha VALUES (".$grupo.", ".$fecha.")");
+$mysqli->query("INSERT INTO grupos (grupoid, fecha, idioma VALUES (".$grupo.", ".$fecha.", ".$idioma.")");
 for ($i = 0; $i <= count($participantes); $i++) {
 $mysqli->query("INSERT INTO usuarios_grupo (numero, grupo VALUES (".$participantes[$i].", ".$grupo.")");
 }
