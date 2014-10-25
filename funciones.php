@@ -13,6 +13,15 @@ $w->loginWithPassword($password);
 $w->PollMessages();
 }
 
+function traduccion($Gnumero, $texto)
+{
+global $mysqli;
+$mysqli->query("SELECT idioma FROM grupos WHERE grupoid = '".$Gnumero."'");
+$idioma = $mysqli->fetch_assoc();
+$traduccion = explode("; ", fopen("traduccion-".$idioma.".txt", "r"));
+return $traduccion[$texto];
+}
+
 function EsUnComando($mynumber, $from_group_jid, $from_user_jid, $id, $type, $time, $name, $body)
 {
 global $mysqli, $w;
@@ -35,8 +44,8 @@ function ComandosEx($MSG, $Unumero, $Gnumero, $nombre)
 global $mysqli, $w;	
 $comando = explode(' ', $MSG);
 if ($comando[0]=='hola') {
-$w->sendMessage($Gnumero, "hola, $nombre.");
-$w->sendMessage($Gnumero, "¿como estas?");	
+$w->sendMessage($Gnumero, traduccion($Gnumero, "1").$nombre.".");
+$w->sendMessage($Gnumero, traduccion($Gnumero, "2"));	
 }
 else if ($comando[0]=='add') {
 if ($comando[1]=='') {
@@ -77,14 +86,14 @@ $w->sendGroupsParticipantsRemove($Gjid, $comando[1]);
 }
 }
 }
-function CrearGrupo($asunto, $participantes)
+function CrearGrupo($asunto, $participantes, $creador, $idioma)
 {
 global $w, $mysqli;
 if ($mysqli->connect_errno) {
 return false;
 }
 else {
-$grupo = $w->sendGroupsChatCreate($asunto, $participantes, $creador);
+$grupo = $w->sendGroupsChatCreate($asunto, $participantes);
 $fecha = date("Y-m-d H:i:s");
 $mysqli->query("INSERT INTO grupos (grupoid, fecha VALUES (".$grupo.", ".$fecha.")");
 for ($i = 0; $i <= count($participantes); $i++) {
