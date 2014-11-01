@@ -8,6 +8,7 @@ CREATE TABLE `usuarios_grupo` (
   `id` mediumint,
   `numero` varchar(100) default NULL,
   `grupo` varchar(255),
+  `admin` varchar(255),
   `nombre` varchar(255) default NULL,
   PRIMARY KEY (`id`)
 ) AUTO_INCREMENT=1;
